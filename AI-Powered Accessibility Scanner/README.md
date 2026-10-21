@@ -2,6 +2,24 @@
 
 A Python proof of concept that scans a web page for accessibility violations, asks an AI service to explain each finding, stores the results in PostgreSQL, and displays them in a Streamlit dashboard.
 
+## Skills demostrated
+
+- Python
+- Playwright
+- Generative AI Integration
+- SQL
+- PostgreSQL
+- API Testing
+- Database Testing
+- Accessibility Testing
+- Axe-Core
+- Flask
+- Streamlit
+- Data Visualization
+- Docker
+- Git
+- ETL Concepts
+
 ## What it currently does
 
 The current implementation is a single-page prototype:
@@ -30,7 +48,6 @@ AI-Powered Accessibility Scanner/
 ├── docker-compose.yml
 └── Requirements.txt
 ```
-
 ## Technology
 
 - Python 3.12
