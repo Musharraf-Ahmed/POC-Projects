@@ -1,5 +1,1 @@
-# POC-Projects
-
-This repository consists of sample Proof of Concept projects that can be utilized publicly. 
-
-## NOTE: All the projects / resources present on this repository is a property of @Musharraf-Ahmed, these can be used with proper credits.
+<img width="2378" height="2268" alt="image" src="https://github.com/user-attachments/assets/6ec350f5-d7cf-43ac-8b33-889ddcfe8139" />
