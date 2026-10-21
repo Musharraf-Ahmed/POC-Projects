@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: postgres:16
+
+    container_name: accessibility-postgres
+
+    environment:
+      POSTGRES_DB: Accessibility_Data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./database/full_dump.sql:/docker-entrypoint-initdb.d/Accessibility_Database.sql
+
+  accessibility-app:
+
+    build: .
+
+    container_name: accessibility-app
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "5000:5000"
+      - "8501:8501"
+
+volumes:
+  pg_data:

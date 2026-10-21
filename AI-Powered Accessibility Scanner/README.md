@@ -1,305 +1,87 @@
-#AI-Powered Accessibility Scanner
+# AI-Powered Accessibility Scanner
 
-An AI-assisted accessibility testing platform that automatically scans web applications for WCAG compliance violations, generates remediation recommendations using LLMs, stores historical results, and provides actionable insights through dashboards and automated reporting.
+A Python proof of concept that scans a web page for accessibility violations, asks an AI service to explain each finding, stores the results in PostgreSQL, and displays them in a Streamlit dashboard.
 
-🚀 ##Project Overview
+## What it currently does
 
-Manual accessibility testing is time-consuming and often lacks scalability across large web applications. This project automates the accessibility validation process using:
+The current implementation is a single-page prototype:
 
-Playwright for browser automation
-axe-core for WCAG rule evaluation
-Python for orchestration and data processing
-PostgreSQL for historical data storage
-n8n for workflow automation
-LLMs (Claude/Ollama/Llama 3) for AI-powered explanations and remediation guidance
-FastAPI for API services
-Streamlit for reporting dashboards
+1. Launches a headless Chromium browser with Playwright.
+2. Runs axe on the page configured in `Utils/PageScanner.py` and collects each violation's rule ID, impact, description, and scan time.
+3. Requests an AI-generated explanation for each violation.
+4. Sends the findings to a Flask API for storage in PostgreSQL.
+5. Provides a Streamlit dashboard for filtering and reviewing findings, viewing summaries and charts, downloading a CSV, and asking questions about the results.
 
-The platform scans websites, detects accessibility violations, enriches findings with AI-generated recommendations, and provides development teams with prioritized remediation plans.
+The scanner currently targets a URL configured in source code; it does not accept a URL as a command-line or API parameter.
 
-🎯 ##Key Features
-Accessibility Scanning
-Automated WCAG 2.1 compliance scanning
-Keyboard accessibility validation
-Form label checks
-Image alt-text validation
-ARIA attribute verification
-Color contrast analysis
-Semantic HTML validation
-AI-Powered Analysis
-Human-readable explanations of violations
-WCAG guideline references
-Suggested code fixes
-Prioritized remediation recommendations
-Executive summary generation
-Reporting & Analytics
-Historical trend tracking
-Violation severity analysis
-Accessibility scoring
-Dashboard visualization
-PDF/Email-ready reports
-Automation
-On-demand scans via API
-Scheduled scans with n8n
-Slack/Email notifications
-CI/CD integration support
+## Project layout
 
-🛠 ##Technology Stack
-Testing & Automation
-Python 3.11+
-Playwright
-axe-core
-Pytest
-Backend
-FastAPI
-SQLAlchemy
-PostgreSQL
-AI Layer
-Claude API
-Ollama
-Llama 3
-Mistral
-Workflow Automation
-n8n
-Reporting
-Streamlit
-Plotly
-Pandas
-DevOps
-Docker
-Docker Compose
-GitHub Actions
-
-ai-accessibility-scanner/
-
-├── scanner/
-│   ├── scan.py
-│   ├── axe_runner.py
-│   └── report_generator.py
-│
-├── api/
-│   ├── main.py
-│   └── routes.py
-│
-├── ai/
-│   ├── analyzer.py
-│   └── prompts.py
-│
-├── database/
-│   ├── schema.sql
-│   └── db.py
-│
-├── dashboard/
-│   └── streamlit_app.py
-│
-├── workflows/
-│   └── n8n_workflow.json
-│
-├── tests/
-│   ├── test_api.py
-│   └── test_scanner.py
-│
+```text
+AI-Powered Accessibility Scanner/
+├── AccessibilityAnalysis.py         # Application entry point
+├── Database/
+│   └── Accessibility_Database.sql   # PostgreSQL database dump
+├── Utils/
+│   ├── AILayerInjection.py          # AI explanations for findings
+│   ├── ApiEndpointCreation.py       # Flask API and database writes
+│   ├── DashboardCreation.py         # Streamlit dashboard
+│   └── PageScanner.py               # Playwright and axe scan
+├── Dockerfile
 ├── docker-compose.yml
-├── requirements.txt
-└── README.md
+└── Requirements.txt
+```
 
-⚙ ##Installation
-Clone Repository
-Shell
-git clone https://github.com/yourusername/ai-accessibility-scanner.git
- 
-cd ai-accessibility-scanner
-Create Virtual Environment
-Shell
-python -m venv venv
- 
-source venv/bin/activate
+## Technology
 
-Windows:
+- Python 3.12
+- Playwright with Chromium
+- axe-core via `axe-playwright-python`
+- Flask
+- PostgreSQL and psycopg2
+- Streamlit and pandas
+- Portkey AI client
 
-PowerShell
-venv\Scripts\activate
-Install Dependencies
-Shell
-pip install -r requirements.txt
-Install Playwright Browsers
-Shell
-playwright install
-🗄 Database Setup
+## API
 
-Create PostgreSQL database:
+The Flask service defines these endpoints on port `5000`:
 
-SQL
-CREATE DATABASE accessibility_db;
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/violations` | Save a finding and return its database ID |
+| `GET` | `/violations` | Return saved findings |
 
-Run schema:
+The `POST` body is expected to include `page_url`, `rule_id`, `impact`, `description`, `scan_date`, and `ai_analysis`.
 
-Shell
-psql -U postgres -d accessibility_db -f database/schema.sql
-▶ Running the Scanner
-Scan a Website
-Shell
-python scanner/scan.py https://example.com
+## Setup and current status
 
-Example Response:
+The repository includes a Dockerfile and Compose file, but the current configuration needs adjustment before the application can be run reliably. In particular, some imports and script paths do not match the `Utils/` layout, and the Compose file refers to database and requirements paths whose names do not match the checked-in files. The API and dashboard also use database connection settings that need to be aligned with the Compose service.
 
-JSON
-{
-"critical": 3,
-"serious": 5,
-"moderate": 8,
-"minor": 6
-}
-🤖 AI Analysis Example
+For a local Python environment, the dependency installation commands are:
 
-Raw Violation:
+```powershell
+cd "AI-Powered Accessibility Scanner"
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r Requirements.txt
+playwright install chromium
+```
 
-JSON
-{
-"id": "image-alt",
-"impact": "critical"
-}
+These commands install dependencies and the browser only; they do not resolve the application configuration gaps described above.
 
-AI Output:
+## Configuration and safety
 
-Plain Text
-Issue:
-Images do not contain meaningful alternative text.
- 
-Impact:
-Screen reader users cannot understand image content.
- 
-WCAG:
-1.1.1 Non-text Content
- 
-Recommended Fix:
-Provide descriptive alt attributes for informative images.
- 
-Example:
-<img src="logo.png"
-alt="Company Logo">
-🌐 FastAPI Endpoints
-Start Accessibility Scan
-Request
-HTTP
-POST /scan
+- The scan target and AI provider settings are currently defined in source code. Configure these through environment variables or another secret-management mechanism before using the project beyond local experimentation.
+- Do not commit API tokens, database passwords, or other credentials. Rotate any credential that has been exposed in a shared repository.
+- Only scan websites that you own or are authorized to test. The configured scan target should be changed to an authorized test site before running the scanner.
+- AI-generated explanations are suggestions, not a substitute for validating findings against the applicable WCAG criteria and assistive technologies.
 
-Body
+## Database
 
-JSON
-{
-"url": "https://example.com"
-}
-Response
-JSON
-{
-"scan_id": 101,
-"status": "completed",
-"critical": 4,
-"score": 82
-}
-Get Scan Results
-HTTP
-GET /scan/{scan_id}
-Retrieve Historical Reports
-HTTP
-GET /reports
-🔄 n8n Workflow
-Automated Scan Process
-Plain Text
-Webhook Trigger
-│
-▼
-Python Scanner
-│
-▼
-Store Results
-│
+The schema stores findings in `accessibility_violations`, including the URL, axe rule, impact, description, scan timestamp, and AI explanation. `Database/Accessibility_Database.sql` is a PostgreSQL dump; it is not a plain SQL schema file.
 
-Supported triggers:
+## Limitations
 
-Manual Trigger
-Scheduled Daily Scan
-GitHub Deployment Trigger
-API Request Trigger
-📊 Dashboard
-Summary Metrics
-Total Violations
-Accessibility Score
-Critical Issues
-Top WCAG Failures
-Trend Analysis
-Sample Dashboard Widgets
-Plain Text
-Accessibility Score: 87/100
- 
-Critical Issues: 4
-Serious Issues: 7
-Moderate Issues: 11
-Minor Issues: 6
-Trend Analysis
-Plain Text
-Month Violations
- 
-January 42
-February 28
-March 17
-April 11
-🧪 API Testing
-
-Automated API validation using Pytest.
-
-Example:
-
-Python
-def test_scan_endpoint():
-response = requests.post(
-"http://localhost:8000/scan",
-json={
-"url":"https://example.com"
-}
-)
- 
-assert response.status_code == 200
-🐳 Docker Deployment
-
-Build and start services:
-
-Shell
-docker-compose up --build
-
-Containers:
-
-Plain Text
-PostgreSQL
-FastAPI
-Accessibility Scanner
-Streamlit Dashboard
-n8n
-📈 Future Enhancements
-Multi-page crawling
-WCAG 2.2 support
-AI-generated code fixes
-Jira defect creation
-GitHub Actions integration
-Accessibility scorecards
-Trend forecasting using AI
-Visual accessibility testing
-PDF report generation
-💼 Skills Demonstrated
-
-This project showcases expertise in:
-
-Accessibility Testing
-WCAG 2.1 Standards
-Python Automation
-Playwright
-axe-core
-API Testing
-FastAPI
-SQL & PostgreSQL
-n8n Workflow Automation
-AI/LLM Integration
-Docker
-CI/CD Concepts
-Test Reporting & Analytics
+- The scanner currently scans one hard-coded page per run.
+- The AI service is called once per violation, so scans depend on provider availability and may incur usage costs.
+- The dashboard and API have configuration that must be aligned with the database service before containerized use.
+- This proof of concept is not a complete WCAG conformance test and should not be treated as certification.

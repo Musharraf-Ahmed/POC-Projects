@@ -1,7 +1,7 @@
 import threading
 import subprocess
-from PageScanner import ScanPage
-from ApiEndpointCreation import CreateApiEndpoint
+from Utils.PageScanner import ScanPage
+from Utils.ApiEndpointCreation import CreateApiEndpoint
 
 # =============== Step 1 ==================== #
 # Start the API endpoint in a separate thread
@@ -10,7 +10,6 @@ api_thread = threading.Thread(
     target=CreateApiEndpoint,
     daemon=True
 )
-
 api_thread.start()
 
 # =============== Step 2 ==================== #
@@ -27,6 +26,7 @@ subprocess.Popen(
         "-m",
         "streamlit",
         "run",
-        "DashboardCreation.py"
+        "DashboardCreation.py",
+        "--server.address=0.0.0.0"
     ]
 )
