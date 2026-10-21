@@ -26,7 +26,7 @@ subprocess.Popen(
         "-m",
         "streamlit",
         "run",
-        "DashboardCreation.py",
+        "Utils/DashboardCreation.py",
         "--server.address=0.0.0.0"
     ]
 )

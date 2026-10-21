@@ -4,7 +4,7 @@ def CreateApiEndpoint():
     app = Flask(__name__)
 
     conn = psycopg2.connect(
-        host="postgres",
+        host="localhost",
         database="Accessibility_Data",
         user="postgres",
         password="Mprsnl2026"

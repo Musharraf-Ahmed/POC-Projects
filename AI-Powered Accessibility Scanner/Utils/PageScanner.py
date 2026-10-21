@@ -2,7 +2,7 @@ from datetime import datetime
 from playwright.sync_api import sync_playwright
 from axe_playwright_python.sync_playwright import Axe
 import requests
-from AILayerInjection import explain_issue
+from Utils.AILayerInjection import explain_issue
 
 def ScanPage():
     with sync_playwright() as p:
