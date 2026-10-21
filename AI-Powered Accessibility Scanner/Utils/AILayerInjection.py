@@ -20,8 +20,8 @@ def explain_issue(rule, description):
         """
     
     portkey = Portkey(
-       base_url = "https://portkeygateway.perficient.com/v1",
-       api_key = "myr2tBJ3n1F9WsXBeDDLa50bgZxQ")
+       base_url = "PORT_KEY_BASE_URL",
+       api_key = "PORT_KEY_API_KEY")
        
     response = portkey.chat.completions.create(
        model = "@azure-openai/anthropic.claude-3-7-sonnet@20250219",
